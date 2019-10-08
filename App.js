@@ -6,7 +6,8 @@ import {
   View,
   TextInput,
   Button,
-  FlatList
+  FlatList,
+  Modal
 } from 'react-native';
 
 import GoalInput from './components/GoalInput';
@@ -14,12 +15,14 @@ import GoalItem from './components/GoalItem';
 
 export default function App() {
   const [courseGoals, setCourseGoals] = useState([]);
+  const [isAdd, setIsAdd] = useState(false);
 
   const handlePress = inputGoal => {
     setCourseGoals(currentGoals => [
       ...currentGoals,
       { id: Math.random().toString(), value: inputGoal }
     ]);
+    setIsAdd(false);
   };
 
   const handleRemoveGoal = id =>
@@ -28,7 +31,17 @@ export default function App() {
   const hasCourseGoals = courseGoals.length > 0;
   return (
     <View style={styles.screen}>
-      <GoalInput onAddGoal={handlePress} />
+      <Modal
+        visible={isAdd}
+        animationType="slide"
+        onRequestClose={() => setIsAdd(false)}
+      >
+        <GoalInput
+          onAddGoal={handlePress}
+          onCancelGoal={() => setIsAdd(false)}
+        />
+      </Modal>
+      <Button title="Add Goal" onPress={() => setIsAdd(true)} />
       {hasCourseGoals ? (
         <FlatList
           keyExtractor={(item, index) => item.id}
@@ -49,6 +62,8 @@ const styles = StyleSheet.create({
     padding: 50
   },
   noDataLabel: {
-    fontStyle: 'italic'
+    fontStyle: 'italic',
+    textAlign: 'center',
+    marginVertical: 10
   }
 });
